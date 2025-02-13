@@ -139,6 +139,7 @@ def extract_xml_answer(text: str) -> str:
     return answer.strip()
 
 def check_answer(answer,response):
+    return answer == response
     if answer == response:
         return True
     try:
