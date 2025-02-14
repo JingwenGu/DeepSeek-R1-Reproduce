@@ -131,6 +131,7 @@ def convert_sample_math500(sample):
 
 dataset_math500 = get_math500_questions()
 converted_samples_math500 = dataset_math500.map(lambda x: {'text':convert_sample_math500(x)})
+converted_samples_math500_train = Dataset.from_dict(converted_samples_math500[:400])
 
 dataset_composite = datasets.concatenate_datasets([converted_samples_gsm8k] + [converted_samples_math500]*script_args.mix_ratio).shuffle()
 

@@ -121,9 +121,10 @@ print("getting datasets")
 dataset_gsm8k = get_gsm8k_questions()
 print("received gsm8k")
 dataset_math500 = get_math500_questions()
+dataset_math500_train = Dataset.from_dict(dataset_math500[:400])
 print("received math500")
 
-dataset = datasets.concatenate_datasets([dataset_gsm8k] + [dataset_math500] * script_args.mix_ratio)
+dataset = datasets.concatenate_datasets([dataset_gsm8k] + [dataset_math500_train] * script_args.mix_ratio)
 dataset = dataset.shuffle(seed=42)
 # endregion
 
