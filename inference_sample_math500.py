@@ -2,15 +2,10 @@
 import re
 import torch
 from datasets import load_dataset, Dataset
-from transformers import AutoTokenizer, AutoModelForCausalLM, HfArgumentParser, TrainerCallback
-from trl import GRPOConfig, GRPOTrainer
-import wandb
-import datetime
-import os
+from transformers import AutoTokenizer, AutoModelForCausalLM, HfArgumentParser
 import json
 from dataclasses import dataclass, field
 from typing import Optional
-# from utils import getTokenizedDataLoader
 #endregion
 
 # region args
@@ -357,6 +352,6 @@ for model_name in models:
         device_map='auto'
     )
     results = inference(model)
-    keyword = "eval" if script_args.dataset_split == 'test' else 'sample'
+    # keyword = "eval" if script_args.dataset_split == 'test' else 'sample'
     with open(f'{model_name}/{script_args.output_name}.json','w') as file:
         json.dump(results,file)

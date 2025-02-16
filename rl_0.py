@@ -4,14 +4,18 @@ References:
 https://gist.github.com/willccbb/4676755236bb08cab5f4e54a0475d6fb
 https://github.com/waylandzhang/DeepSeek-RL-Qwen-0.5B-GRPO-gsm8k/blob/main/train-checkpoint-900.ipynb
 """
+
+import os
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 import re
 import torch
+torch.cuda.empty_cache()
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, HfArgumentParser, TrainerCallback
 from trl import GRPOConfig, GRPOTrainer
+from peft import LoraConfig
 import wandb
 import datetime
-import os
 import json
 from dataclasses import dataclass, field
 from typing import Optional
@@ -208,6 +212,14 @@ class LogOutputsCallback(TrainerCallback):
             f.write(f"Step {state.global_step}: {outputs}\n\n")
 
 # use peft at your own risk; not working for me with multi-GPU training
+peft_config = LoraConfig(
+    r=16,
+    lora_alpha=64,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "up_proj", "down_proj", "gate_proj"],
+    task_type="CAUSAL_LM",
+    lora_dropout=0.05,
+)
+
 trainer = GRPOTrainer(
     model=model,
     processing_class=tokenizer,
@@ -220,7 +232,7 @@ trainer = GRPOTrainer(
     args=training_args,
     train_dataset=dataset,
     callbacks=[LogOutputsCallback()],
-    #peft_config=peft_config
+    peft_config=peft_config
 )
 # endregion
 
